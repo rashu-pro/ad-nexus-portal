@@ -21,6 +21,8 @@ const AddAdvertiser = () => {
         event.preventDefault()
         // Show the loader
         setLoading(true);
+        setErrors([])
+        setStatus(null);
 
         try {
             await addAdvertiserRequest({
@@ -31,8 +33,13 @@ const AddAdvertiser = () => {
             });
             setStatus({ type: 'success', message: 'Advertiser added successfully!' });
         } catch (error) {
-            setErrors(error.response.data.errors)
-            setStatus({ type: 'error', message: 'Failed to add advertiser. ' });
+            let errorMessage = 'Failed to add advertiser.';
+            if(error.response.data.errors){
+                setErrors(error.response.data.errors)
+            }else{
+                errorMessage = error.response.data.message;
+            }
+            setStatus({ type: 'error', message: errorMessage });
         } finally {
             setLoading(false);
         }
