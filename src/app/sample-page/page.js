@@ -1,7 +1,7 @@
 'use client'
+
 import Image from "next/image";
 import useRequest from "@/hooks/request";
-
 
 const SamplePage = () => {
     const { data } = useRequest();
