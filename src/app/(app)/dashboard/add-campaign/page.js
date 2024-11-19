@@ -47,7 +47,7 @@ const AddAdvertiser = () => {
     }
     return (
         <>
-            <Header title="Add Advertiser" />
+            <Header title="Add Campaign" />
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 flex justify-center">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg w-full md:w-1/2 relative">
