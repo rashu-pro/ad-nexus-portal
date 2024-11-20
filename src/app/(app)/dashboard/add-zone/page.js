@@ -64,6 +64,13 @@ const AddWebsite = () => {
             });
             setSuccessMessage(`Website "${zoneName}" has been successfully added!`)
             setStatus({ type: 'success', message: 'Zone added successfully!' })
+            if(status.type === 'success'){
+                setWebsiteId('')
+                setZoneName('')
+                setType('')
+                setWidth('')
+                setHeight('')
+            }
         } catch (error) {
             let errorMessage = 'Failed to add Zone.'
             if(error.response.data.errors){
@@ -144,7 +151,7 @@ const AddWebsite = () => {
                                     {status.message}
                                 </div>
                             )}
-                            <h2 className="text-2xl font-semibold mb-4">Add Website</h2>
+                            <h2 className="text-2xl font-semibold mb-4">Add Zone</h2>
 
                             <form onSubmit={submitForm}>
                                 {/* Select Website */}

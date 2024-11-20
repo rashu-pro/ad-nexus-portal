@@ -8,15 +8,18 @@ import Button from "@/components/Button"
 import {useState} from "react"
 import request from '@/hooks/adServerRequest'
 import Image from "next/image"
+import {useAuth} from "@/hooks/auth";
 
 const AddAdvertiser = () => {
-    const [advertiserId, setAdvertiserId] = useState(null)
-    const [advertiserIdInAdServer, setAdvertiserIdInAdServer] = useState(null)
+    const { user } = useAuth({ middleware: 'auth' })
+    const email = user?.email
+
+    const [emailAddress, setEmailAddress] = useState(email)
     const [campaignName, setCampaignName] = useState('')
     const [startDate, setStartDate] = useState('')
     const [endDate, setEndDate] = useState('')
-    const [weight, setWeight] = useState(null)
-    const [revenueType, setRevenueType] = useState(null)
+    const [weight, setWeight] = useState(1)
+    const [revenueType, setRevenueType] = useState(1)
     const [errors, setErrors] = useState([])
     const [status, setStatus] = useState(null)
     const [loading, setLoading] = useState(false)
@@ -29,26 +32,25 @@ const AddAdvertiser = () => {
         setErrors([])
         setStatus(null);
 
-        setAdvertiserIdInAdServer(25)
-        setAdvertiserId(6)
-        setWeight(1)
-        setRevenueType(1)
-
         const endPoint = '/api/add-campaign'
         try {
             await request({
-                advertiserIdInAdServer: 25,
-                advertiserId: 6,
+                emailAddress: emailAddress,
                 campaignName: campaignName,
                 startDate: startDate,
                 endDate: endDate,
-                weight: weight,
-                revenueType: revenueType,
+                weight: parseInt(weight),
+                revenueType: parseInt(revenueType),
                 endPoint,
                 setErrors,
             });
             setSuccessMessage(`Campaign "${campaignName}" has been successfully added!`)
             setStatus({ type: 'success', message: 'Campaign added successfully!' })
+            if(status.type === 'success'){
+                setCampaignName('')
+                setStartDate('')
+                setEndDate('')
+            }
         } catch (error) {
             let errorMessage = 'Failed to add Campaign.'
             if(error.response.data.errors){
@@ -182,18 +184,6 @@ const AddAdvertiser = () => {
                                 </div>
 
                                 <div className="hidden-field">
-                                    <Input
-                                        id="advertiserId"
-                                        type="hidden"
-                                        value={advertiserId}
-                                    />
-
-                                    <Input
-                                        id="advertiserIdInAdServer"
-                                        type="hidden"
-                                        value={advertiserIdInAdServer}
-                                    />
-
                                     <Input
                                         id="weight"
                                         type="hidden"

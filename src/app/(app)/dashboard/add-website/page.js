@@ -43,8 +43,12 @@ const AddWebsite = () => {
             });
             setSuccessMessage(`Website "${websiteUrl}" has been successfully added!`)
             setStatus({ type: 'success', message: 'Website added successfully!' })
+            if(status.type === 'success'){
+                setWebsiteName('')
+                setWebsiteUrl('')
+            }
         } catch (error) {
-            let errorMessage = 'Failed to add Campaign.'
+            let errorMessage = 'Failed to add Website.'
             if(error.response.data.errors){
                 setErrors(error.response.data.errors)
             }else{
