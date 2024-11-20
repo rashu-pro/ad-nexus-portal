@@ -53,6 +53,12 @@ const Navigation = ({ user }) => {
                                 active={usePathname() === '/dashboard/add-website'}>
                                 Add Website
                             </NavLink>
+
+                            <NavLink
+                                href="/dashboard/add-zone"
+                                active={usePathname() === '/dashboard/add-zone'}>
+                                Add Zone
+                            </NavLink>
                         </div>
                     </div>
 
@@ -145,6 +151,12 @@ const Navigation = ({ user }) => {
                             href="/dashboard/add-website"
                             active={usePathname() === '/dashboard/add-website'}>
                             Add Website
+                        </ResponsiveNavLink>
+
+                        <ResponsiveNavLink
+                            href="/dashboard/add-zone"
+                            active={usePathname() === '/dashboard/add-zone'}>
+                            Add Zone
                         </ResponsiveNavLink>
                     </div>
 
