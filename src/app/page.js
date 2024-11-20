@@ -1,10 +1,17 @@
-import LoginLinks from '@/app/LoginLinks'
+'use client'
 
+import LoginLinks from '@/app/LoginLinks'
+import { useRouter } from "next/navigation";
+
+/*
 export const metadata = {
     title: 'Laravel',
 }
+ */
 
 const Home = () => {
+    const router = useRouter();
+    router.push('/login');
     return (
         <>
             <div className="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center sm:pt-0">
