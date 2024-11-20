@@ -1,33 +1,33 @@
 'use client'
 
 import Header from '@/app/(app)/Header'
-import Label from "@/components/Label";
-import Input from "@/components/Input";
-import InputError from "@/components/InputError";
-import Button from "@/components/Button";
-import {useState} from "react";
+import Label from "@/components/Label"
+import Input from "@/components/Input"
+import InputError from "@/components/InputError"
+import Button from "@/components/Button"
+import {useState} from "react"
 import { useRouter } from 'next/navigation'
-import addAdvertiserRequest from "@/hooks/addAdvertiserRequest";
-import Image from "next/image";
+import addAdvertiserRequest from "@/hooks/addAdvertiserRequest"
+import Image from "next/image"
 
 const AddAdvertiser = () => {
     const router = useRouter()
 
-    const [advertiserName, setAdvertiserName] = useState('');
-    const [emailAddress, setEmailAddress] = useState('');
-    const [contactName, setContactName] = useState('');
-    const [errors, setErrors] = useState([]);
-    const [status, setStatus] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [successMessage, setSuccessMessage] = useState(null);
+    const [advertiserName, setAdvertiserName] = useState('')
+    const [emailAddress, setEmailAddress] = useState('')
+    const [contactName, setContactName] = useState('')
+    const [errors, setErrors] = useState([])
+    const [status, setStatus] = useState(null)
+    const [loading, setLoading] = useState(false)
+    const [successMessage, setSuccessMessage] = useState(null)
 
 
     const submitForm = async event => {
         event.preventDefault()
         // Show the loader
-        setLoading(true);
+        setLoading(true)
         setErrors([])
-        setStatus(null);
+        setStatus(null)
 
         try {
             await addAdvertiserRequest({

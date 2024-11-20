@@ -7,7 +7,7 @@ import { useState } from 'react'
 const Page = () => {
     const { logout, resendEmailVerification } = useAuth({
         middleware: 'auth',
-        redirectIfAuthenticated: '/dashboard/add-advertiser',
+        redirectIfAuthenticated: '/dashboard',
     })
 
     const [status, setStatus] = useState(null)
