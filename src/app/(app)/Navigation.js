@@ -47,6 +47,12 @@ const Navigation = ({ user }) => {
                                 active={usePathname() === '/dashboard/add-campaign'}>
                                 Add Campaign
                             </NavLink>
+
+                            <NavLink
+                                href="/dashboard/add-website"
+                                active={usePathname() === '/dashboard/add-website'}>
+                                Add Website
+                            </NavLink>
                         </div>
                     </div>
 
@@ -121,6 +127,24 @@ const Navigation = ({ user }) => {
                             href="/dashboard"
                             active={usePathname() === '/dashboard'}>
                             Dashboard
+                        </ResponsiveNavLink>
+
+                        <ResponsiveNavLink
+                            href="/dashboard/add-advertiser"
+                            active={usePathname() === '/dashboard/add-advertiser'}>
+                            Add Advertiser
+                        </ResponsiveNavLink>
+
+                        <ResponsiveNavLink
+                            href="/dashboard/add-campaign"
+                            active={usePathname() === '/dashboard/add-campaign'}>
+                            Add Campaign
+                        </ResponsiveNavLink>
+
+                        <ResponsiveNavLink
+                            href="/dashboard/add-website"
+                            active={usePathname() === '/dashboard/add-website'}>
+                            Add Website
                         </ResponsiveNavLink>
                     </div>
 
