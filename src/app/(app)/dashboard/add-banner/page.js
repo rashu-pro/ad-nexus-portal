@@ -86,14 +86,6 @@ const AddWebsite = () => {
             });
             setSuccessMessage(`Banner "${bannerName}" has been successfully added!`)
             setStatus({ type: 'success', message: 'Banner added successfully!' })
-            if(status.type === 'success'){
-                setCampaignId('')
-                setBannerName('')
-                setImageURL('')
-                setWidth('')
-                setHeight('')
-                setUrl('')
-            }
         } catch (error) {
             let errorMessage = 'Failed to add Banner.'
             if(error.response.data){

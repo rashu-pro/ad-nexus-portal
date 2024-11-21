@@ -31,6 +31,7 @@ const AddAdvertiser = () => {
         setLoading(true);
         setErrors([])
         setStatus(null);
+        setSuccessMessage('');
 
         const endPoint = '/api/add-campaign'
         try {
@@ -46,11 +47,6 @@ const AddAdvertiser = () => {
             });
             setSuccessMessage(`Campaign "${campaignName}" has been successfully added!`)
             setStatus({ type: 'success', message: 'Campaign added successfully!' })
-            if(status.type === 'success'){
-                setCampaignName('')
-                setStartDate('')
-                setEndDate('')
-            }
         } catch (error) {
             let errorMessage = 'Failed to add Campaign.'
             if(error.response.data.errors){
