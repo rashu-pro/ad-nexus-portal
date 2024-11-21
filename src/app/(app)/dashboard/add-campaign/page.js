@@ -47,6 +47,10 @@ const AddAdvertiser = () => {
             });
             setSuccessMessage(`Campaign "${campaignName}" has been successfully added!`)
             setStatus({ type: 'success', message: 'Campaign added successfully!' })
+
+            setCampaignName('')
+            setStartDate('')
+            setEndDate('')
         } catch (error) {
             let errorMessage = 'Failed to add Campaign.'
             if(error.response.data.errors){

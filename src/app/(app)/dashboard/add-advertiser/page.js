@@ -9,12 +9,16 @@ import {useState} from "react"
 import { useRouter } from 'next/navigation'
 import addAdvertiserRequest from "@/hooks/addAdvertiserRequest"
 import Image from "next/image"
+import {useAuth} from "@/hooks/auth";
 
 const AddAdvertiser = () => {
     const router = useRouter()
+    // Get the logged in user object
+    const { user } = useAuth({ middleware: 'auth' })
+    const email = user?.email
 
     const [advertiserName, setAdvertiserName] = useState('')
-    const [emailAddress, setEmailAddress] = useState('')
+    const [emailAddress, setEmailAddress] = useState(email)
     const [contactName, setContactName] = useState('')
     const [errors, setErrors] = useState([])
     const [status, setStatus] = useState(null)
@@ -38,6 +42,15 @@ const AddAdvertiser = () => {
             });
             setSuccessMessage(`Advertiser "${advertiserName}" has been successfully added!`);
             setStatus({ type: 'success', message: 'Advertiser added successfully!' });
+
+            setAdvertiserName('')
+            setContactName('')
+            setEmailAddress('')
+
+            // Redirect to add-campaign route after 15 seconds
+            setTimeout(() => {
+                router.push('/dashboard/add-campaign');
+            }, 5000);
         } catch (error) {
             let errorMessage = 'Failed to add advertiser.';
             if(error.response.data.errors){
@@ -47,10 +60,7 @@ const AddAdvertiser = () => {
             }
             setStatus({ type: 'error', message: errorMessage });
         } finally {
-            // Redirect to add-campaign route after 15 seconds
-            setTimeout(() => {
-                router.push('/dashboard/add-campaign');
-            }, 5000);
+            setLoading(false)
         }
 
     }

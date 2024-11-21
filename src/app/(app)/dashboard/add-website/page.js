@@ -43,6 +43,9 @@ const AddWebsite = () => {
             });
             setSuccessMessage(`Website "${websiteUrl}" has been successfully added!`)
             setStatus({ type: 'success', message: 'Website added successfully!' })
+
+            setWebsiteName('')
+            setWebsiteUrl('')
         } catch (error) {
             let errorMessage = 'Failed to add Website.'
             if(error.response.data.errors){

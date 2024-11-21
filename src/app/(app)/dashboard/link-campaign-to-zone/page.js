@@ -70,6 +70,9 @@ const AddWebsite = () => {
             });
             setSuccessMessage(`Campaign linked with zone`)
             setStatus({ type: 'success', message: 'Campaign linked with zone!' })
+
+            setZoneId('')
+            setCampaignId('')
         } catch (error) {
             let errorMessage = 'Failed to link campaign with zone.'
             if(error.response.data){

@@ -62,8 +62,13 @@ const AddWebsite = () => {
                 endPoint,
                 setErrors,
             });
-            setSuccessMessage(`Website "${zoneName}" has been successfully added!`)
+            setSuccessMessage(`zone "${zoneName}" has been successfully added!`)
             setStatus({ type: 'success', message: 'Zone added successfully!' })
+
+            setWebsiteId('')
+            setZoneName('')
+            setWidth('')
+            setHeight('')
         } catch (error) {
             let errorMessage = 'Failed to add Zone.'
             if(error.response.data.errors){
