@@ -7,20 +7,20 @@ import InputError from "@/components/InputError"
 import Button from "@/components/Button"
 import {useState} from "react"
 import { useAuth } from "@/hooks/auth";
-import request from '@/hooks/adServerRequest'
 import Image from "next/image"
 import { useEffect } from "react";
 import axios from '@/lib/axios'
-import {parse} from "postcss";
-import uploadBanner from "@/hooks/uploadBanner";
-import addBanner from "@/hooks/addBanner";
+import getAdvertiserId from "@/hooks/getAdvertiserId";
 
 const AddWebsite = () => {
     // Get the logged in user object
     const { user } = useAuth({ middleware: 'auth' })
     const emailAddress = user?.email
 
+    const advertiserId = getAdvertiserId(emailAddress)
+
     const [campaignId, setCampaignId] = useState('')
+    const [zoneId, setZoneId] = useState('')
     const [bannerName, setBannerName] = useState('')
     const [imageURL, setImageURL] = useState('')
     const [url, setUrl] = useState('')
@@ -35,24 +35,30 @@ const AddWebsite = () => {
 
     const [file, setFile] = useState(null)
 
-    const [campaigns, setCampaigns] = useState([]);
+    const [campaigns, setCampaigns] = useState([])
+    const [zones, setZones] = useState([])
 
     const handleFileChange = (event) => {
         setFile(event.target.files[0])
     };
 
-    function extractImageName(url) {
-        try {
-            // Create a URL object to parse the URL
-            const parsedUrl = new URL(url);
-            // Get the pathname from the URL and split it by '/'
-            const pathSegments = parsedUrl.pathname.split('/');
-            // Return the last segment, which is the image name
-            return pathSegments[pathSegments.length - 1];
-        } catch (error) {
-            console.error('Invalid URL:', error);
-            return null;
-        }
+    const handleZoneChange = (event) => {
+        setZoneId(event.target.value)
+        console.log('zone id: ', event.target.value)
+
+        axios
+            .get('/api/get-zone/'+event.target.value)
+            .then((response)=>{
+                console.log('zone details: ', response.data.zone)
+                setWidth(response.data.zone.width)
+                setHeight(response.data.zone.height)
+            })
+            .catch(error => {
+                if (error.response.status !== 409) throw error
+            }).finally(()=>{
+            // setLoading(true)
+        })
+
     }
 
     useEffect(() => {
@@ -66,45 +72,56 @@ const AddWebsite = () => {
             }).finally(()=>{
             // setLoading(true)
         })
+
+        axios
+            .post('/api/get-zone-list-by-advertiser', {emailAddress})
+            .then((response)=>{
+                setZones(response.data.zones)
+            })
+            .catch(error => {
+                if (error.response.status !== 409) throw error
+            }).finally(()=>{
+            // setLoading(true)
+        })
     }, [])
 
     const submitForm = async event => {
         event.preventDefault()
         // Show the loader
-        setLoading(true);
+        setLoading(true)
         setErrors([])
-        setStatus(null);
+        setStatus(null)
         setSuccessMessage(null)
 
         const formData = new FormData();
-        formData.append('campaignId', campaignId);
-        formData.append('bannerName', bannerName);
-        formData.append('url', url);
-        formData.append('width', width);
-        formData.append('height', height);
-        if (file) formData.append('file', file);
+        formData.append('campaignId', campaignId)
+        formData.append('bannerName', bannerName)
+        formData.append('url', url)
+        formData.append('width', width)
+        formData.append('height', height)
+        if (file) formData.append('file', file)
 
         try {
             const response = await axios.post('/api/add-banner', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             console.log(response)
-            setSuccessMessage(`Banner "${bannerName}" has been successfully added!`);
-            setStatus({ type: 'success', message: 'Banner added successfully!' });
+            setSuccessMessage(`Banner "${bannerName}" has been successfully added!`)
+            setStatus({ type: 'success', message: 'Banner added successfully!' })
 
             // Reset form fields
-            setCampaignId('');
-            setBannerName('');
-            setImageURL('');
-            setUrl('');
-            setWidth(null);
-            setHeight(null);
-            setFile(null);
+            setCampaignId('')
+            setBannerName('')
+            setImageURL('')
+            setUrl('')
+            setWidth(null)
+            setHeight(null)
+            setFile(null)
         } catch (error) {
-            setErrors(error.response?.data?.errors || {});
-            setStatus({ type: 'error', message: error.response?.data?.message || 'Failed to add Banner.' });
+            setErrors(error.response?.data?.errors || {})
+            setStatus({ type: 'error', message: error.response?.data?.message || 'Failed to add Banner.' })
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
 
     }
@@ -196,9 +213,39 @@ const AddWebsite = () => {
                                     <InputError messages={errors.campaignId} className="mt-2" />
                                 </div>
 
-                                {/* Banner */}
+                                {/* Select Zone */}
+                                <div className="mt-4">
+                                    <Label htmlFor="campaignId"> Select Zone <span>*</span></Label>
+
+                                    <select
+                                        id="zoneId"
+                                        className="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        value={zoneId}
+                                        onChange={handleZoneChange}
+                                        required
+                                    >
+                                        <option value=''>Select a Campaign</option>
+                                        {zones.map((item)=>(
+                                            <option key={item.id} value={item.id}>{item.name}</option>
+                                        ))}
+
+                                    </select>
+
+                                    <InputError messages={errors.zoneId} className="mt-2" />
+                                </div>
+
+                                {/* Upload Banner */}
                                 <div className="mt-4">
                                     <Label htmlFor="file">Upload Banner <span>*</span></Label>
+                                    {width&& (
+                                        <>
+                                            <div className="mb-4 px-4 py-2 rounded bg-gray-50 text-gray-800">
+                                                <p>Banner width must be {width}px</p>
+                                                <p>Banner height must be {height}px</p>
+                                            </div>
+                                        </>
+                                    )}
+                                    <p></p>
                                     <input
                                         type="file"
                                         id="file"
@@ -240,36 +287,21 @@ const AddWebsite = () => {
                                     <InputError messages={errors.url} className="mt-2" />
                                 </div>
 
-                                {/* Banner Width */}
-                                <div className="mt-4">
-                                    <Label htmlFor="width"> Banner Width (px) <span>*</span></Label>
-
+                                <div className="hidden-fields">
                                     <Input
                                         id="width"
-                                        type="number"
+                                        type="hidden"
                                         value={width}
                                         className="block mt-1 w-full"
                                         onChange={event => setWidth(event.target.value)}
-                                        required
                                     />
-
-                                    <InputError messages={errors.width} className="mt-2" />
-                                </div>
-
-                                {/* Banner Height */}
-                                <div className="mt-4">
-                                    <Label htmlFor="height"> Banner Height (px) <span>*</span></Label>
-
                                     <Input
                                         id="height"
-                                        type="number"
+                                        type="hidden"
                                         value={height}
                                         className="block mt-1 w-full"
                                         onChange={event => setHeight(event.target.value)}
-                                        required
                                     />
-
-                                    <InputError messages={errors.height} className="mt-2" />
                                 </div>
 
                                 <div className="flex items-center justify-end mt-4">
