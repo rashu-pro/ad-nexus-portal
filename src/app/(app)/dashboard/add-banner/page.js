@@ -12,6 +12,8 @@ import Image from "next/image"
 import { useEffect } from "react";
 import axios from '@/lib/axios'
 import {parse} from "postcss";
+import uploadBanner from "@/hooks/uploadBanner";
+import addBanner from "@/hooks/addBanner";
 
 const AddWebsite = () => {
     // Get the logged in user object
@@ -23,15 +25,21 @@ const AddWebsite = () => {
     const [imageURL, setImageURL] = useState('')
     const [url, setUrl] = useState('')
     const [storageType, setStorageType] = useState('html')
-    const [width, setWidth] = useState('')
-    const [height, setHeight] = useState('')
+    const [width, setWidth] = useState(null)
+    const [height, setHeight] = useState(null)
     const [weight, setWeight] = useState(1)
     const [errors, setErrors] = useState([])
     const [status, setStatus] = useState(null)
     const [loading, setLoading] = useState(false)
     const [successMessage, setSuccessMessage] = useState(null)
 
+    const [file, setFile] = useState(null)
+
     const [campaigns, setCampaigns] = useState([]);
+
+    const handleFileChange = (event) => {
+        setFile(event.target.files[0])
+    };
 
     function extractImageName(url) {
         try {
@@ -58,8 +66,7 @@ const AddWebsite = () => {
             }).finally(()=>{
             // setLoading(true)
         })
-    }, []);
-
+    }, [])
 
     const submitForm = async event => {
         event.preventDefault()
@@ -69,44 +76,35 @@ const AddWebsite = () => {
         setStatus(null);
         setSuccessMessage(null)
 
-        const endPoint = '/api/add-banner'
-        try {
-            await request({
-                campaignId: parseInt(campaignId),
-                bannerName: bannerName,
-                fileName: extractImageName(imageURL),
-                imageURL: imageURL,
-                url: url,
-                storageType: storageType,
-                width: parseInt(width),
-                height: parseInt(height),
-                weight: weight,
-                endPoint,
-                setErrors,
-            });
-            setSuccessMessage(`Banner "${bannerName}" has been successfully added!`)
-            setStatus({ type: 'success', message: 'Banner added successfully!' })
+        const formData = new FormData();
+        formData.append('campaignId', campaignId);
+        formData.append('bannerName', bannerName);
+        formData.append('url', url);
+        formData.append('width', width);
+        formData.append('height', height);
+        if (file) formData.append('file', file);
 
-            setCampaignId('')
-            setBannerName('')
-            setImageURL('')
-            setUrl('')
-            setWidth('')
-            setHeight('')
+        try {
+            const response = await axios.post('/api/add-banner', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            console.log(response)
+            setSuccessMessage(`Banner "${bannerName}" has been successfully added!`);
+            setStatus({ type: 'success', message: 'Banner added successfully!' });
+
+            // Reset form fields
+            setCampaignId('');
+            setBannerName('');
+            setImageURL('');
+            setUrl('');
+            setWidth(null);
+            setHeight(null);
+            setFile(null);
         } catch (error) {
-            let errorMessage = 'Failed to add Banner.'
-            if(error.response.data){
-                setErrors(error.response.data.errors)
-            }else{
-                errorMessage = error.response.data.message
-            }
-            setStatus({ type: 'error', message: error.response.data.message })
+            setErrors(error.response?.data?.errors || {});
+            setStatus({ type: 'error', message: error.response?.data?.message || 'Failed to add Banner.' });
         } finally {
-            setLoading(false)
-            // Redirect to add-campaign route after 15 seconds
-            setTimeout(() => {
-                // router.push('/dashboard/add-campaign');
-            }, 5000)
+            setLoading(false);
         }
 
     }
@@ -198,6 +196,18 @@ const AddWebsite = () => {
                                     <InputError messages={errors.campaignId} className="mt-2" />
                                 </div>
 
+                                {/* Banner */}
+                                <div className="mt-4">
+                                    <Label htmlFor="file">Upload Banner <span>*</span></Label>
+                                    <input
+                                        type="file"
+                                        id="file"
+                                        className="block mt-1 w-full"
+                                        onChange={handleFileChange}
+                                    />
+                                    <InputError messages={errors.file} className="mt-2" />
+                                </div>
+
                                 {/* Banner Name */}
                                 <div className="mt-4">
                                     <Label htmlFor="bannerName"> Banner Name <span>*</span></Label>
@@ -212,22 +222,6 @@ const AddWebsite = () => {
                                     />
 
                                     <InputError messages={errors.bannerName} className="mt-2" />
-                                </div>
-
-                                {/* Image Url */}
-                                <div className="mt-4">
-                                    <Label htmlFor="imageUrl"> Image Url <span>*</span></Label>
-
-                                    <Input
-                                        id="imageUrl"
-                                        type="text"
-                                        value={imageURL}
-                                        className="block mt-1 w-full"
-                                        onChange={event => setImageURL(event.target.value)}
-                                        required
-                                    />
-
-                                    <InputError messages={errors.imageURL} className="mt-2" />
                                 </div>
 
                                 {/* Target Url */}
@@ -248,7 +242,7 @@ const AddWebsite = () => {
 
                                 {/* Banner Width */}
                                 <div className="mt-4">
-                                    <Label htmlFor="width"> Zone Width (px) <span>*</span></Label>
+                                    <Label htmlFor="width"> Banner Width (px) <span>*</span></Label>
 
                                     <Input
                                         id="width"
@@ -264,7 +258,7 @@ const AddWebsite = () => {
 
                                 {/* Banner Height */}
                                 <div className="mt-4">
-                                    <Label htmlFor="height"> Zone Height (px) <span>*</span></Label>
+                                    <Label htmlFor="height"> Banner Height (px) <span>*</span></Label>
 
                                     <Input
                                         id="height"
