@@ -19,6 +19,7 @@ const AddWebsite = () => {
 
     const [zoneId, setZoneId] = useState('')
     const [campaignId, setCampaignId] = useState('')
+    const [adScript, setAdScript] = useState('')
     const [errors, setErrors] = useState([])
     const [status, setStatus] = useState(null)
     const [loading, setLoading] = useState(false)
@@ -62,14 +63,16 @@ const AddWebsite = () => {
 
         const endPoint = '/api/link-campaign-to-zone'
         try {
-            await request({
+            const response = await request({
                 zoneId: parseInt(zoneId),
                 campaignId: parseInt(campaignId),
                 endPoint,
                 setErrors,
             });
+
             setSuccessMessage(`Campaign linked with zone`)
             setStatus({ type: 'success', message: 'Campaign linked with zone!' })
+            setAdScript(response.adScript);
 
             setZoneId('')
             setCampaignId('')
@@ -143,15 +146,21 @@ const AddWebsite = () => {
                         <div className="p-6 bg-white border-b border-gray-200">
                             {/* Status Message */}
                             {status && (
-                                <div
-                                    className={`mb-4 px-4 py-2 rounded ${
-                                        status.type === 'success'
-                                            ? 'bg-green-100 text-green-700'
-                                            : 'bg-red-100 text-red-700'
-                                    }`}
-                                >
-                                    {status.message}
-                                </div>
+                                <>
+                                    <div
+                                        className={`mb-4 px-4 py-2 rounded ${
+                                            status.type === 'success'
+                                                ? 'bg-green-100 text-green-700'
+                                                : 'bg-red-100 text-red-700'
+                                        }`}
+                                    >
+                                        {status.message}
+                                    </div>
+                                    <div className="mb-4">
+                                        <p><strong>Copy and paste the following code snippet to the website to show the banner:</strong></p>
+                                        <pre className="bg-gray-100 border border-gray-300 rounded-lg text-gray-800 font-mono text-sm leading-relaxed p-4 overflow-x-auto shadow-md max-w-4xl mx-auto my-5 hover:bg-gray-200 hover:border-gray-400">{adScript}</pre>
+                                    </div>
+                                </>
                             )}
                             <h2 className="text-2xl font-semibold mb-4">Link Campaign to Zone</h2>
 
