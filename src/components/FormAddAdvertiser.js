@@ -1,6 +1,4 @@
 'use client'
-
-import Header from '@/app/(app)/Header'
 import Label from "@/components/Label"
 import Input from "@/components/Input"
 import InputError from "@/components/InputError"
@@ -11,7 +9,7 @@ import addAdvertiserRequest from "@/hooks/addAdvertiserRequest"
 import Image from "next/image"
 import {useAuth} from "@/hooks/auth";
 
-const AddAdvertiser = () => {
+const FormAddAdvertiser = () => {
     const router = useRouter()
     // Get the logged in user object
     const { user } = useAuth({ middleware: 'auth' })
@@ -66,7 +64,6 @@ const AddAdvertiser = () => {
     }
     return (
         <>
-            <Header title="Add Advertiser" />
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 flex justify-center">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg w-full md:w-1/2 relative">
@@ -130,7 +127,7 @@ const AddAdvertiser = () => {
                             )}
                             <h2 className="text-2xl font-semibold mb-4">Add Advertiser</h2>
 
-                            <form onSubmit={submitForm}>
+                            <form method="post" action={submitForm}>
                                 {/* Advertiser Name */}
                                 <div>
                                     <Label htmlFor="advertiserName">Advertiser Name <span>*</span></Label>
@@ -192,4 +189,5 @@ const AddAdvertiser = () => {
     )
 }
 
-export default AddAdvertiser
+export default FormAddAdvertiser
+
