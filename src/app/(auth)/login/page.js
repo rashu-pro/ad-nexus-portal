@@ -7,6 +7,7 @@ import Label from '@/components/Label'
 import Link from 'next/link'
 import { useAuth } from '@/hooks/auth'
 import { useEffect, useState } from 'react'
+import ReCAPTCHA from "react-google-recaptcha"
 import { useRouter } from 'next/navigation'
 import AuthSessionStatus from '@/app/(auth)/AuthSessionStatus'
 
@@ -23,6 +24,11 @@ const Login = () => {
     const [shouldRemember, setShouldRemember] = useState(false)
     const [errors, setErrors] = useState([])
     const [status, setStatus] = useState(null)
+    const [recaptchaToken, setRecaptchaToken] = useState(null)
+
+    const onCaptchaChange = (token) => {
+        setRecaptchaToken(token);
+    }
 
     useEffect(() => {
         if (router.reset?.length > 0 && errors.length === 0) {
@@ -35,10 +41,16 @@ const Login = () => {
     const submitForm = async event => {
         event.preventDefault()
 
+        if (!recaptchaToken) {
+            setErrors({ captcha: ['Please complete the CAPTCHA.'] });
+            return;
+        }
+
         login({
             email,
             password,
             remember: shouldRemember,
+            recaptchaToken,
             setErrors,
             setStatus,
         })
@@ -104,6 +116,12 @@ const Login = () => {
                             Remember me
                         </span>
                     </label>
+                </div>
+
+                {/* reCAPTCHA */}
+                <div className="block mt-4">
+                    <ReCAPTCHA sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY} onChange={onCaptchaChange} />
+                    <InputError messages={errors.captcha} className="mt-2" />
                 </div>
 
                 <div className="flex items-center justify-end mt-4">

@@ -2,6 +2,7 @@ import useSWR from 'swr'
 import axios from '@/lib/axios'
 import { useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import verifyRecaptcha from "@/hooks/verifyRecaptcha";
 
 export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
     const router = useRouter()
@@ -35,11 +36,17 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
             })
     }
 
-    const login = async ({ setErrors, setStatus, ...props }) => {
+    const login = async ({ recaptchaToken, setErrors, setStatus, ...props }) => {
         await csrf()
 
         setErrors([])
         setStatus(null)
+
+        const isHuman = await verifyRecaptcha(recaptchaToken);
+        if(!isHuman){
+            setErrors({ captcha: ['CAPTCHA verification failed.'] });
+            return;
+        }
 
         axios
             .post('/login', props)
@@ -105,7 +112,7 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
 
         if (middleware === 'auth' && !user?.email_verified_at)
             router.push('/verify-email')
-        
+
         if (
             window.location.pathname === '/verify-email' &&
             user?.email_verified_at
